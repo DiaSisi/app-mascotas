@@ -4,23 +4,17 @@ from django.db import models
 from django import forms
 from .models import Mascota, RegistroMedico, Suscripcion
 
-# Forzamos el uso del calendario moderno de HTML5
-class MascotaAdmin(admin.ModelAdmin):
+# 1. Creamos un diseño que bloquea el calendario confuso de Jazzmin
+class CalendarioModerno(forms.DateInput):
+    input_type = 'date'
+
+# 2. Se lo aplicamos a un panel maestro
+class PanelMaestro(admin.ModelAdmin):
     formfield_overrides = {
-        models.DateField: {'widget': forms.DateInput(attrs={'type': 'date'})},
+        models.DateField: {'widget': CalendarioModerno(attrs={'class': 'form-control'})},
     }
 
-class RegistroMedicoAdmin(admin.ModelAdmin):
-    formfield_overrides = {
-        models.DateField: {'widget': forms.DateInput(attrs={'type': 'date'})},
-    }
-
-class SuscripcionAdmin(admin.ModelAdmin):
-    formfield_overrides = {
-        models.DateField: {'widget': forms.DateInput(attrs={'type': 'date'})},
-    }
-
-# Registramos TODOS los modelos con su nueva configuración
-admin.site.register(Mascota, MascotaAdmin)
-admin.site.register(RegistroMedico, RegistroMedicoAdmin)
-admin.site.register(Suscripcion, SuscripcionAdmin)
+# 3. Registramos tus 3 tablas usando ese panel maestro
+admin.site.register(Mascota, PanelMaestro)
+admin.site.register(RegistroMedico, PanelMaestro)
+admin.site.register(Suscripcion, PanelMaestro)
